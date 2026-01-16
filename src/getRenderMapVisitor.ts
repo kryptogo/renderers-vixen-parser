@@ -92,8 +92,11 @@ function getInnerDefinedTypeTransform(
         return isEnumEmptyVariant(definedType.type)
             ? `self.${outerTypeName} as i32`
             : `Some(self.${outerTypeName}.into_proto())`;
+    } else if (definedType.type.kind === 'tupleTypeNode') {
+        // Tuple structs also use into_proto()
+        return `Some(self.${outerTypeName}.into_proto())`;
     } else {
-        throw new Error(`Defined type ${fieldTypeName} is not a struct or enum`);
+        throw new Error(`Defined type ${fieldTypeName} is not a struct, enum, or tuple`);
     }
 }
 
@@ -114,8 +117,11 @@ function getInnerDefinedTypeTransformForEnumVariant(
         return isEnumEmptyVariant(definedType.type)
             ? `self.${outerTypeName} as i32`
             : `self.${outerTypeName}.into_proto()`;
+    } else if (definedType.type.kind === 'tupleTypeNode') {
+        // Tuple structs also use into_proto()
+        return `self.${outerTypeName}.into_proto()`;
     } else {
-        throw new Error(`Defined type ${fieldTypeName} is not a struct or enum`);
+        throw new Error(`Defined type ${fieldTypeName} is not a struct, enum, or tuple`);
     }
 }
 
