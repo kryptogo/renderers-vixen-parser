@@ -130,7 +130,11 @@ export function getProtoTypeManifestVisitor(options: {
                     manifest.imports.mergeWith(traits.imports);
                     parentName = null;
 
-                    const renderedType = isNode(definedType.type, ['enumTypeNode', 'structTypeNode'])
+                    const renderedType = isNode(definedType.type, [
+                        'enumTypeNode',
+                        'structTypeNode',
+                        'tupleTypeNode',
+                    ])
                         ? manifest.type
                         : `pub type ${pascalCase(definedType.name)} = ${manifest.type};`;
 

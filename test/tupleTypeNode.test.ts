@@ -12,7 +12,7 @@ import {
 } from '@codama/nodes';
 import { getFromRenderMap } from '@codama/renderers-core';
 import { visit } from '@codama/visitors-core';
-import { describe, test } from 'vitest';
+import { describe, expect, test } from 'vitest';
 
 import { getRenderMapVisitor } from '../src';
 import { codeContains } from './_setup';
@@ -67,9 +67,19 @@ describe('tupleTypeNode support', () => {
         ]);
 
         // Proto should also be generated correctly
-        codeContains(getFromRenderMap(renderMap, 'proto/pump_amm.proto').content, [
+        const protoContent = getFromRenderMap(renderMap, 'proto/pump_amm.proto').content;
+        codeContains(protoContent, [
             'message OptionBool',
             'bool field_0',
+        ]);
+
+        // Proto should NOT contain invalid "pub type" syntax (Rust syntax, not proto3)
+        expect(protoContent).not.toContain('pub type');
+
+        // IntoProto implementation should be generated for tuple types
+        codeContains(getFromRenderMap(renderMap, 'src/generated_parser/proto_helpers.rs').content, [
+            'impl IntoProto<proto_def::OptionBool> for OptionBool',
+            'field_0:',
         ]);
     });
 });

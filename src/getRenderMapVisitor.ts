@@ -672,6 +672,20 @@ export function getRenderMapVisitor(options: GetRenderMapOptions) {
                                     fields,
                                     name: type.name,
                                 });
+                            } else if (type.type.kind === 'tupleTypeNode') {
+                                // Tuple types need IntoProto impl with field_0, field_1, etc.
+                                const fields = type.type.items.map((item, idx) => {
+                                    const fieldName = `field_${idx}`;
+                                    return {
+                                        name: fieldName,
+                                        transform: getTransform(item, fieldName, types),
+                                    };
+                                });
+
+                                protoTypesHelpers.push({
+                                    fields,
+                                    name: type.name,
+                                });
                             } else if (type.type.kind === 'enumTypeNode' && !isEnumEmptyVariant(type.type)) {
                                 // Only need for additional `IntoProto` implementations for non-empty variants enums (otherwhise
                                 //  they are automatically treated as i32 by tonic genereted types)
