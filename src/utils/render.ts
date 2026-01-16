@@ -10,7 +10,7 @@ export function rustDocblock(docs: string[]): string {
     return `${lines.join('\n')}\n`;
 }
 
-export const render = (template: string, context?: object, options?: NunJucksOptions): string => {
+export const render = (template: string, context?: object, options?: NunJucksOptions): { content: string } => {
     // @ts-expect-error import.meta will be used in the right environment.
     const dirname = __ESM__ ? pathDirname(fileURLToPath(import.meta.url)) : __dirname;
     const templates = __TEST__ ? join(dirname, '..', '..', 'public', 'templates') : join(dirname, 'templates'); // Path to templates from bundled output file.
@@ -21,5 +21,5 @@ export const render = (template: string, context?: object, options?: NunJucksOpt
     env.addFilter('kebabCase', kebabCase);
     env.addFilter('titleCase', titleCase);
     env.addFilter('rustDocblock', rustDocblock);
-    return env.render(template, context);
+    return { content: env.render(template, context) };
 };
